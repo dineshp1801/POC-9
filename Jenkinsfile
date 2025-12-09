@@ -1,30 +1,52 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = "mydockerhubuser/myapp"
+        IMAGE_TAG  = "latest"
+    }
+
     stages {
+
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                credentialsId: 'github-creds',
-                url: 'https://github.com/dineshp1801/POC-9.git'
+                    credentialsId: 'github-creds',
+                    url: 'https://github.com/dineshp1801/POC-9.git'
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                sh """
+                mvn clean package -DskipTests
+                ls -l target
+                cp target/*.jar target/myapp.jar
+                """
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t myapp:latest ."
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    sh """
-                    docker tag myapp:latest mydockerhubuser/myapp:latest
-                    docker push mydockerhubuser/myapp:latest
-                    """
-                }
+                sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
