@@ -4,7 +4,8 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/your-org/your-repo.git'
+                credentialsId: 'github-creds',
+                url: 'https://github.com/dineshp1801/POC-9.git'
             }
         }
 
