@@ -6,7 +6,7 @@
     - name: Pull latest Docker image
       docker_container:
         name: myapp
-        image: mydockerhubuser/myapp:latest
+        image: dinesh7940/myapp:latest
         state: started
         recreate: true
         ports:
