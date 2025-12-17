@@ -16,16 +16,6 @@ pipeline {
             }
         }
 
-        stage('Build Application') {
-            steps {
-                sh """
-                mvn clean package -DskipTests
-                ls -l target
-                cp target/*.jar target/myapp.jar
-                """
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
