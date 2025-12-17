@@ -44,7 +44,7 @@ pipeline {
             steps {
                 sh '''
                   cd ansible
-                  ansible-playbook -i hosts.ini deploy.yml
+                  /usr/local/bin/ansible-playbook -i hosts.ini deploy.yml
                 '''
             }
         }
